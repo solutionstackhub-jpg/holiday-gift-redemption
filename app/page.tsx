@@ -148,7 +148,7 @@ export default async function GuestPage({ searchParams }: { searchParams: Search
             <div className="relative ml-auto w-[440px] rotate-[-6deg] animate-card-in [animation-delay:350ms]">
               <GiftCardVisual amount={settings.amount} brand={settings.rewardBrand} from={settings.firmName} />
             </div>
-            <div className="relative -mt-6 ml-8 w-fit rotate-[3deg] animate-rise rounded-2xl bg-white/95 px-4 py-3 shadow-2xl [animation-delay:800ms]">
+            <div className="relative ml-auto mr-10 mt-8 w-fit rotate-[2deg] animate-rise rounded-2xl bg-white/95 px-4 py-3 shadow-2xl [animation-delay:800ms]">
               <p className="flex items-center gap-2 text-[13px] font-semibold text-pine-900">
                 <Zap className="size-4 text-gold-500" /> Delivered instantly
               </p>
