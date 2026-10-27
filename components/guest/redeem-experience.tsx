@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import DemoBar from '@/components/demo-bar';
 import { GiftCardVisual } from '@/components/gift-card';
+import Portal from '@/components/portal';
 import { photos } from '@/lib/images';
 
 export interface GuestSettings {
@@ -164,7 +165,11 @@ export default function RedeemExperience({
         </div>
       </form>
 
-      {gift && <GiftReveal gift={gift} settings={settings} onClose={() => setGift(null)} />}
+      {gift && (
+        <Portal>
+          <GiftReveal gift={gift} settings={settings} onClose={() => setGift(null)} />
+        </Portal>
+      )}
       {demoMode && <DemoBar onTestCode={applyTestCode} />}
     </>
   );

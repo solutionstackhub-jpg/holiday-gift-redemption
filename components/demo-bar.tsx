@@ -4,6 +4,7 @@ import { FlaskConical, Gift, LayoutDashboard, Sparkles, Ticket, X } from 'lucide
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import Portal from '@/components/portal';
 
 /**
  * Demo-mode shortcuts. Collapsed to a small button in the corner so it never covers
@@ -45,6 +46,7 @@ export default function DemoBar({ onTestCode }: { onTestCode?: (code: string) =>
     'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13.5px] font-medium text-white/85 transition hover:bg-white/10 hover:text-white';
 
   return (
+    <Portal>
     <div ref={ref} className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2 sm:bottom-6 sm:right-6">
       {open && (
         <nav
@@ -79,5 +81,6 @@ export default function DemoBar({ onTestCode }: { onTestCode?: (code: string) =>
         Demo
       </button>
     </div>
+    </Portal>
   );
 }
