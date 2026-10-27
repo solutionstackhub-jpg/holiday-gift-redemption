@@ -1,0 +1,117 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-serif), 'Iowan Old Style', Georgia, serif;
+  --font-mono: var(--font-mono-face), ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Evergreen: the brand color */
+  --color-pine-50: #f1f6f3;
+  --color-pine-100: #dcebe2;
+  --color-pine-200: #b9d6c6;
+  --color-pine-300: #8cb9a1;
+  --color-pine-400: #5e9a7c;
+  --color-pine-500: #3d7d60;
+  --color-pine-600: #2c634c;
+  --color-pine-700: #234f3d;
+  --color-pine-800: #1c3f31;
+  --color-pine-900: #142f25;
+  --color-pine-950: #0b1c16;
+
+  /* Cranberry: used sparingly for the main call to action */
+  --color-berry-400: #e0646c;
+  --color-berry-500: #c0353f;
+  --color-berry-600: #a3262f;
+  --color-berry-700: #861f27;
+
+  /* Gold: small festive details */
+  --color-gold-200: #f3e5bf;
+  --color-gold-300: #e9d29a;
+  --color-gold-400: #dcbc6e;
+  --color-gold-500: #c9a24a;
+
+  --color-cream: #faf7f2;
+  --color-sand: #f3eee6;
+
+  --animate-rise: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-card-in: card-in 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-shine: shine 3.2s ease-in-out infinite;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes card-in {
+    0% { opacity: 0; transform: perspective(1200px) rotateY(-70deg) translateY(20px) scale(0.9); }
+    60% { opacity: 1; transform: perspective(1200px) rotateY(8deg) scale(1.02); }
+    100% { opacity: 1; transform: perspective(1200px) rotateY(0) scale(1); }
+  }
+  @keyframes shine {
+    0%, 55% { transform: translateX(-120%) skewX(-20deg); }
+    100% { transform: translateX(220%) skewX(-20deg); }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color-scheme: light;
+  }
+  body {
+    @apply bg-cream text-pine-950;
+  }
+  ::selection {
+    background: var(--color-gold-200);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 2px;
+  }
+}
+
+/* Falling confetti on the gift reveal */
+.confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: confetti-fall var(--dur, 3.2s) cubic-bezier(0.3, 0.6, 0.4, 1) var(--delay, 0s) forwards;
+}
+@keyframes confetti-fall {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg); }
+  100% { opacity: 0; transform: translate3d(var(--drift, 30px), 105vh, 0) rotate(var(--spin, 540deg)); }
+}
+
+/* Gentle snowfall over hero photos */
+.snow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #fff9, transparent),
+    radial-gradient(2px 2px at 140px 80px, #fff8, transparent),
+    radial-gradient(1.5px 1.5px at 260px 160px, #fffa, transparent),
+    radial-gradient(2.5px 2.5px at 340px 40px, #fff7, transparent),
+    radial-gradient(1.5px 1.5px at 90px 210px, #fff9, transparent);
+  background-size: 380px 260px;
+  animation: snowfall 18s linear infinite;
+}
+@keyframes snowfall {
+  from { background-position: 0 0; }
+  to { background-position: 60px 520px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .snow, .confetti-piece { display: none; }
+}
+
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
