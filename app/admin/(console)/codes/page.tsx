@@ -12,6 +12,7 @@ import { dateTime, num } from '@/lib/format';
 import { originFromHeaders } from '@/lib/http';
 import { getStore } from '@/lib/store';
 import type { CodeStatus } from '@/lib/store/types';
+import { loadSettings, syncDemo } from '@/lib/demo-state';
 
 export const metadata: Metadata = { title: 'Codes' };
 
@@ -26,6 +27,7 @@ export default async function CodesPage({ searchParams }: { searchParams: Search
   const page = Math.max(1, Math.min(10_000, Number(sp.page) || 1));
 
   const store = getStore();
+  await syncDemo(store);
   const [{ rows, total }, stats] = await Promise.all([store.list({ q, status, page, pageSize: PAGE_SIZE }), store.stats()]);
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const origin = originFromHeaders(await headers());

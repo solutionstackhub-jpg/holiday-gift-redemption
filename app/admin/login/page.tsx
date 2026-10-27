@@ -6,6 +6,7 @@ import { adminPasswordSet, isAdmin } from '@/lib/auth';
 import { photos } from '@/lib/images';
 import { getStore } from '@/lib/store';
 import LoginForm from './login-form';
+import { loadSettings } from '@/lib/demo-state';
 
 export const metadata: Metadata = { title: 'Admin sign in' };
 // Auth depends on runtime env and cookies, so never prerender this page.
@@ -13,7 +14,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function LoginPage() {
   if (await isAdmin()) redirect('/admin');
-  const settings = await getStore().getSettings();
+  const settings = await loadSettings(getStore());
 
   return (
     <div className="grid min-h-screen bg-white lg:grid-cols-2">

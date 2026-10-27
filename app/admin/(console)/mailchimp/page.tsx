@@ -11,12 +11,14 @@ import { photos } from '@/lib/images';
 import { audienceInfo, MERGE_TAG, REDEEMED_TAG } from '@/lib/mailchimp';
 import { formatEndDate } from '@/lib/settings';
 import { getStore } from '@/lib/store';
+import { loadSettings, syncDemo } from '@/lib/demo-state';
 
 export const metadata: Metadata = { title: 'Mailchimp' };
 
 export default async function MailchimpPage() {
   const store = getStore();
-  const [stats, settings] = await Promise.all([store.stats(), store.getSettings()]);
+  await syncDemo(store);
+  const [stats, settings] = await Promise.all([store.stats(), loadSettings(store)]);
   const origin = originFromHeaders(await headers());
   let audience: Awaited<ReturnType<typeof audienceInfo>> | null = null;
   let audienceError = '';

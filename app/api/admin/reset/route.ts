@@ -1,4 +1,5 @@
 import { config } from '@/lib/config';
+import { clearDemoCookies } from '@/lib/demo-state';
 import { adminGuard, json } from '@/lib/http';
 import { getStore } from '@/lib/store';
 import { resetMemoryStore } from '@/lib/store/memory';
@@ -11,5 +12,6 @@ export async function POST() {
     return json({ ok: false, error: 'Reset is only available for in-memory demo data.' }, 400);
   }
   resetMemoryStore();
+  await clearDemoCookies();
   return json({ ok: true });
 }

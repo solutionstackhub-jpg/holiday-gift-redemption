@@ -10,12 +10,14 @@ import { photos } from '@/lib/images';
 import { qrSvg, redeemUrl } from '@/lib/qr';
 import { formatEndDate } from '@/lib/settings';
 import { getStore } from '@/lib/store';
+import { loadSettings, syncDemo } from '@/lib/demo-state';
 
 export const metadata: Metadata = { title: 'Postcards' };
 
 export default async function PostcardsPage() {
   const store = getStore();
-  const [settings, sample, stats] = await Promise.all([store.getSettings(), store.sampleForPostcard(), store.stats()]);
+  await syncDemo(store);
+  const [settings, sample, stats] = await Promise.all([loadSettings(store), store.sampleForPostcard(), store.stats()]);
   const origin = originFromHeaders(await headers());
   const code = sample?.code ?? 'XMAS-8K42-P9QR';
   const svg = await qrSvg(redeemUrl(origin, code, 'qr'));

@@ -234,6 +234,19 @@ export class MemoryStore implements Store {
     return { ...state().settings };
   }
 
+  async applyDemoClaim(claim: { id: string; at: number; src: Channel }) {
+    const row = state().byId.get(claim.id);
+    if (!row || row.status !== 'unused') return;
+    Object.assign(row, {
+      status: 'used',
+      source: claim.src,
+      claimed_at: new Date(claim.at).toISOString(),
+      gift_status: 'sent',
+      order_id: `DEMO-ORD-${row.id.slice(0, 8).toUpperCase()}`,
+      reward_link: `/gift/${row.id}`,
+    });
+  }
+
   async saveSettings(settings: CampaignSettings) {
     state().settings = { ...settings };
   }

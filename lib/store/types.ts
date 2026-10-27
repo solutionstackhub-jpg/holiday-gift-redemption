@@ -81,4 +81,6 @@ export interface Store {
   sampleUnused(): Promise<string | null>;
   getSettings(): Promise<CampaignSettings>;
   saveSettings(settings: CampaignSettings): Promise<void>;
+  /** Demo only: replay a redemption this browser made on another server instance. */
+  applyDemoClaim?(claim: { id: string; at: number; src: Channel }): Promise<void>;
 }

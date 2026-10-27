@@ -8,12 +8,13 @@ import { config } from '@/lib/config';
 import { PROVIDER_LABEL, providerMode } from '@/lib/giftcards';
 import { mailchimpConfigured } from '@/lib/mailchimp';
 import { getStore } from '@/lib/store';
+import { loadSettings } from '@/lib/demo-state';
 
 export const metadata: Metadata = { title: 'Settings' };
 
 export default async function SettingsPage() {
   const store = getStore();
-  const settings = await store.getSettings();
+  const settings = await loadSettings(store);
   const system: [string, string][] = [
     ['Data storage', store.mode === 'memory' ? 'In-memory demo data (resets on restart)' : 'Supabase Postgres'],
     ['Gift card provider', PROVIDER_LABEL[providerMode()]],

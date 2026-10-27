@@ -8,12 +8,13 @@ import { config } from '@/lib/config';
 import { photos } from '@/lib/images';
 import { campaignEnded, formatEndDate } from '@/lib/settings';
 import { getStore } from '@/lib/store';
+import { loadSettings } from '@/lib/demo-state';
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function GuestPage({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;
-  const settings = await getStore().getSettings();
+  const settings = await loadSettings(getStore());
   const code = typeof sp.code === 'string' ? sp.code.slice(0, 40) : '';
   const source = sp.src === 'email' || sp.src === 'qr' ? sp.src : 'web';
   const preview = config.demoMode && sp.preview === 'success' ? 'success' : null;

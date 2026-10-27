@@ -4,9 +4,11 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { BrandMark } from '@/components/brand';
 import { GiftCardVisual } from '@/components/gift-card';
+import { config } from '@/lib/config';
 import { UUID } from '@/lib/http';
 import { photos } from '@/lib/images';
 import { getStore } from '@/lib/store';
+import { loadSettings, syncDemo } from '@/lib/demo-state';
 
 export const metadata: Metadata = { title: 'Your eGift' };
 
@@ -35,10 +37,12 @@ function Barcode({ seed }: { seed: string }) {
 export default async function DemoGiftPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const store = getStore();
-  const settings = await store.getSettings();
+  await syncDemo(store);
+  const settings = await loadSettings(store);
   const row = UUID.test(id) ? await store.findById(id) : null;
   if (!row && id !== 'demo-preview') notFound();
-  if (row && row.status !== 'used') notFound();
+  // In demo mode the page may be served by a server instance that hasn't seen the claim.
+  if (row && row.status !== 'used' && !(config.demoMode && store.mode === 'memory')) notFound();
 
   const cardNumber = (row?.id ?? '6f1c2a90-0000-4000-8000-1f2e3d4c5b6a').replace(/\D/g, '').padEnd(16, '4').slice(0, 16);
 

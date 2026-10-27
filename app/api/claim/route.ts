@@ -1,16 +1,12 @@
-import { cookies } from 'next/headers';
 import { normalizeCode } from '@/lib/codes';
 import { config } from '@/lib/config';
+import { loadSettings, readClaims, rememberClaim, syncDemo } from '@/lib/demo-state';
 import { firstName } from '@/lib/format';
 import { clientIp, json, minutesAgoIso } from '@/lib/http';
 import { fulfill } from '@/lib/redeem';
 import { campaignEnded } from '@/lib/settings';
 import { getStore } from '@/lib/store';
 import type { Channel, CodeRow } from '@/lib/store/types';
-
-// Remembers which gifts this browser unlocked, so re-entering the code shows the gift again
-// on the same device, while anyone else who finds the code only sees "already claimed".
-const GIFT_COOKIE = 'hr_gifts';
 
 function success(row: CodeRow, amount: number, brand: string, returning: boolean, status: 'sent' | 'processing' | 'queued') {
   return json({
@@ -28,7 +24,8 @@ function success(row: CodeRow, amount: number, brand: string, returning: boolean
 
 export async function POST(req: Request) {
   const store = getStore();
-  const settings = await store.getSettings();
+  await syncDemo(store);
+  const settings = await loadSettings(store);
   if (!settings.active) return json({ ok: false, reason: 'paused' }, 403);
   if (campaignEnded(settings)) return json({ ok: false, reason: 'ended' }, 410);
 
@@ -48,9 +45,9 @@ export async function POST(req: Request) {
     return json({ ok: false, reason: 'invalid' }, 400);
   }
 
-  const jar = await cookies();
-  const mine = (jar.get(GIFT_COOKIE)?.value ?? '').split(',').filter(Boolean);
-
+  // A cookie remembers which gifts this browser unlocked, so re-entering the code shows the
+  // gift again on the same device, while anyone else who finds the code sees "already claimed".
+  const mine = (await readClaims()).map((c) => c.id);
   if (row.status === 'used' || row.status === 'pending') {
     if (mine.includes(row.id)) {
       return success(row, settings.amount, settings.rewardBrand, true, row.status === 'used' && row.reward_link ? 'sent' : 'queued');
@@ -66,14 +63,7 @@ export async function POST(req: Request) {
 
   const claimed = await store.claim(code, ip, source);
   if (!claimed) return json({ ok: false, reason: 'already_claimed', claimedAt: new Date().toISOString() }, 409);
-
-  jar.set(GIFT_COOKIE, [...mine.slice(-9), claimed.id].join(','), {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 365,
-  });
+  await rememberClaim({ id: claimed.id, at: Date.now(), src: source });
 
   const result = await fulfill(store, claimed, settings);
   const updated = (await store.findById(claimed.id)) ?? claimed;

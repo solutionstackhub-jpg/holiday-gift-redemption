@@ -10,6 +10,7 @@ import { photos } from '@/lib/images';
 import { daysLeft } from '@/lib/settings';
 import { getStore } from '@/lib/store';
 import type { Channel } from '@/lib/store/types';
+import { loadSettings, syncDemo } from '@/lib/demo-state';
 
 export const metadata: Metadata = { title: 'Overview' };
 
@@ -18,9 +19,10 @@ const DAY_MS = 86_400_000;
 
 export default async function OverviewPage() {
   const store = getStore();
+  await syncDemo(store);
   const now = Date.now();
   const [settings, stats, daily, recent] = await Promise.all([
-    store.getSettings(),
+    loadSettings(store),
     store.stats(),
     store.daily(new Date(now - DAYS * DAY_MS).toISOString(), config.timezone),
     store.recentIssued(7),

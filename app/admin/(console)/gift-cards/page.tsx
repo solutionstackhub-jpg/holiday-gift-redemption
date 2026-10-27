@@ -8,13 +8,15 @@ import { dateTime, money, num } from '@/lib/format';
 import { PROVIDER_LABEL, providerMode } from '@/lib/giftcards';
 import { photos } from '@/lib/images';
 import { getStore } from '@/lib/store';
+import { loadSettings, syncDemo } from '@/lib/demo-state';
 
 export const metadata: Metadata = { title: 'Gift cards' };
 
 export default async function GiftCardsPage() {
   const store = getStore();
+  await syncDemo(store);
   const [settings, stats, pending, recent] = await Promise.all([
-    store.getSettings(),
+    loadSettings(store),
     store.stats(),
     store.pendingRows(25),
     store.recentIssued(12),

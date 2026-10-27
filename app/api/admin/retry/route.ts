@@ -1,6 +1,7 @@
 import { adminGuard, json, UUID } from '@/lib/http';
 import { fulfill } from '@/lib/redeem';
 import { getStore } from '@/lib/store';
+import { loadSettings } from '@/lib/demo-state';
 
 /** Re-orders the gift card for a code stuck in "pending". Same external_id, so no double charge. */
 export async function POST(req: Request) {
@@ -14,6 +15,6 @@ export async function POST(req: Request) {
   if (!row || row.status !== 'pending') {
     return json({ ok: false, error: 'This code is not waiting for a gift card.' }, 400);
   }
-  const result = await fulfill(store, row, await store.getSettings());
+  const result = await fulfill(store, row, await loadSettings(store));
   return result.ok ? json({ ok: true }) : json({ ok: false, error: result.error }, 502);
 }

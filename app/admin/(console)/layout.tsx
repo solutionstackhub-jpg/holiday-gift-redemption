@@ -7,12 +7,13 @@ import { config } from '@/lib/config';
 import { photos } from '@/lib/images';
 import { daysLeft } from '@/lib/settings';
 import { getStore } from '@/lib/store';
+import { loadSettings } from '@/lib/demo-state';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ConsoleLayout({ children }: { children: ReactNode }) {
   if (!(await isAdmin())) redirect('/admin/login');
-  const settings = await getStore().getSettings();
+  const settings = await loadSettings(getStore());
 
   return (
     <div className="min-h-screen bg-zinc-50/70 text-zinc-900">
